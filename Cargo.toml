@@ -17,4 +17,4 @@ publish = true
 [dependencies]
 colored = "2.0.0"
 whoami = "1.1.1"
-sysinfo="*"
+sysinfo="0.16.5"
