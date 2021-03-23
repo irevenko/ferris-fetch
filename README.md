@@ -1,4 +1,4 @@
-# ferris-fetch
+# 🎨🦀 ferris-fetch
 > Inspired by <a href="https://github.com/Gyro7/gofetch">gofetch 💖</a>
 
 <p align="center"><img src="preview.png" width="800"></p><br>

@@ -93,10 +93,9 @@ fn main() {
 	let rustup_ver: Vec<&str> = rustup_cmd.split_whitespace().collect();
 	let cargo_packages = get_cargo_packages();
 
-    info.push("".to_string());
-	info.push("".to_string());
-
 	// hell formatting (because of the crab shape)
+	info.push("".to_string());
+	info.push("".to_string());
 	info.push(format!("              {}{}{}", whoami::username().bright_red().bold(), "@".bold(), whoami::hostname().bright_red().bold()));
 	info.push(format!("              {}", "════════════════"));
 	info.push(format!("          {}{}","rust ver: ".bright_red(), rust_ver[1]));
