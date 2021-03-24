@@ -78,16 +78,19 @@ fn main() {
     let rustup_ver: Vec<&str> = rustup_cmd.split_whitespace().collect();
     let cargo_packages = get_cargo_crates();
 
+    let (username, hostname) = (whoami::username(), whoami::hostname());
+    let underline_len = username.len() + hostname.len() + 1;
+    let underline = std::iter::repeat('═').take(underline_len).collect();
     let info = &[
         "".into(),
         "".into(),
         format!(
             "{}{}{}",
-            whoami::username().bright_red().bold(),
+            username.bright_red().bold(),
             "@".bold(),
-            whoami::hostname().bright_red().bold()
+            hostname.bright_red().bold()
         ),
-        "════════════════".into(),
+        underline,
         format!("{}{}", "rust ver: ".bright_red(), rust_ver[1]),
         format!("{}{}", "rustup ver: ".bright_red(), rustup_ver[1]),
         format!("{}{}", "cargo ver: ".bright_red(), cargo_ver[1]),
