@@ -1,22 +1,24 @@
 use colored::*;
-use sysinfo::{ProcessorExt, System, SystemExt};
+use sysinfo::{ProcessorExt, RefreshKind, System, SystemExt};
 
-const FERRIS_ART: &str = r###"
-              ▄   ▓▄ ▄▓▓  ▓▓
-            ▄  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ▄
-           ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▌
-      ▄▄▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▄▄▄
-      ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▌
-   ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▀▓▄▒▓▓▓▓▓▀▓▄▓▓▓▓▓▓▓▓▓▓▓▓▓
-    ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▌ ▐██▒▓▓▒▌ ██▌▓▓▓▓▓▓▓▓▓▓▓
-  ▄▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████▒▓▓▒████▌▓▓▓▓▓▓▓▓▓▓▓▓▓▄
- ▓▓▓▌▀▓▓▓▓▓▓▓▓▓▓▒▄▄▌▒▓▓▓▓▓▒▒▄▒▒▓▓▓▓▒▒▓▓▀▀▓▀▓▓▓
-  ▀▓▓▄ ▀▄ ▀▓▓▀▓▀▒▓▓▓▒▀▓▒▓▓▀▒▓▓▓▒▀▓▀▓▒▓▀  ▀ ▐▓▀
-    ▓▄  ▄  ▀▓▓▓▓▓▀▀▀         ▓▓▓▓▓▀    ▀ ▄▓
-      ▀       ▀▓▓▓▓▄▄     ▄▄▓▓▓▀         ▀
-                 ▀▀▀▀     ▀▀▀             
-"###;
+const FERRIS_ART: &[&str] = &[
+    "                                              ",
+    "              ▄   ▓▄ ▄▓▓  ▓▓                  ",
+    "            ▄  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ▄          ",
+    "           ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓          ",
+    "        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▌      ",
+    "      ▄▄▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▄▄▄    ",
+    "      ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▌    ",
+    "   ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▀▓▄▒▓▓▓▓▓▀▓▄▓▓▓▓▓▓▓▓▓▓▓▓▓  ",
+    "    ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▌ ▐██▒▓▓▒▌ ██▌▓▓▓▓▓▓▓▓▓▓▓   ",
+    "  ▄▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████▒▓▓▒████▌▓▓▓▓▓▓▓▓▓▓▓▓▓▄",
+    " ▓▓▓▌▀▓▓▓▓▓▓▓▓▓▓▒▄▄▌▒▓▓▓▓▓▒▒▄▒▒▓▓▓▓▒▒▓▓▀▀▓▀▓▓▓",
+    "  ▀▓▓▄ ▀▄ ▀▓▓▀▓▀▒▓▓▓▒▀▓▒▓▓▀▒▓▓▓▒▀▓▀▓▒▓▀  ▀ ▐▓▀",
+    "    ▓▄  ▄  ▀▓▓▓▓▓▀▀▀         ▓▓▓▓▓▀    ▀ ▄▓   ",
+    "      ▀       ▀▓▓▓▓▄▄     ▄▄▓▓▓▀         ▀    ",
+    "                 ▀▀▀▀     ▀▀▀                 ",
+    "                                              ",
+];
 
 fn exc(exc: &str) -> Result<std::process::Output, std::io::Error> {
     let exc: Vec<&str> = exc.split_whitespace().collect();
@@ -46,40 +48,27 @@ fn get_cargo_crates() -> usize {
     cargo_installs.filter(|line| !line.starts_with("    ")).count()
 }
 
-fn get_kernel() -> Option<String> {
-    System::new().get_kernel_version()
-}
-
-fn render(info: Vec<String>) {
-    let lines = FERRIS_ART.lines();
-    let mut i = 0;
-    let empty = String::from("");
-    for line in lines {
+fn render(info: &[String]) {
+    let mut info = info.iter();
+    for line in FERRIS_ART {
         println!(
-            "{}{}",
+            "{}   {}",
             line.red(),
-            match i < info.len() {
-                true => {
-                    i += 1;
-                    &info[i - 1]
-                }
-                false => &empty,
+            match info.next() {
+                Some(info) => info.as_str(),
+                None => "",
             }
         );
     }
 }
 
 fn main() {
-    let mut info: Vec<String> = vec![];
-
-    let cpu_sys = System::new();
-    let cpu = cpu_sys.get_processors();
+    let sys = System::new_with_specifics(RefreshKind::new().with_cpu().with_memory());
+    let cpu = sys.get_processors();
     let cpu = cpu[0].get_brand();
 
-    let mut ram_sys = sysinfo::System::new_all();
-    let used_ram = ram_sys.get_used_memory() / 1024;
-    let total_ram = ram_sys.get_total_memory() / 1024;
-    ram_sys.refresh_all();
+    let used_ram = sys.get_used_memory() / 1024;
+    let total_ram = sys.get_total_memory() / 1024;
 
     let rustc_cmd = get_ver("rustc -V");
     let cargo_cmd = get_ver("cargo -V");
@@ -89,70 +78,55 @@ fn main() {
     let rustup_ver: Vec<&str> = rustup_cmd.split_whitespace().collect();
     let cargo_packages = get_cargo_crates();
 
-    // hell formatting (because of the crab shape)
-    info.push("".to_string());
-    info.push("".to_string());
-    info.push(format!(
-        "              {}{}{}",
-        whoami::username().bright_red().bold(),
-        "@".bold(),
-        whoami::hostname().bright_red().bold()
-    ));
-    info.push(format!("              {}", "════════════════"));
-    info.push(format!(
-        "          {}{}",
-        "rust ver: ".bright_red(),
-        rust_ver[1]
-    ));
-    info.push(format!(
-        "        {}{}",
-        "rustup ver: ".bright_red(),
-        rustup_ver[1]
-    ));
-    info.push(format!(
-        "        {}{}",
-        "cargo ver: ".bright_red(),
-        cargo_ver[1]
-    ));
-    info.push(format!(
-        "      {}{}",
-        "cargo crates: ".bright_red(),
-        cargo_packages
-    ));
-    info.push(format!("	  {}{}", "os: ".bright_red(), whoami::distro()));
-    if let Some(kernel) = get_kernel() {
-        info.push(format!("	  {}{}", "kernel: ".bright_red(), kernel));
-    }
-    info.push(format!("	  {}{}", "cpu: ".bright_red(), cpu));
-    info.push(format!(
-        "	  {}{} » {} MB",
-        "ram: ".bright_red(),
-        used_ram,
-        total_ram
-    ));
-    info.push("".to_string());
-    info.push(format!(
-        "	  {}{}{}{}{}{}{}{}",
-        "███".bright_red(),
-        "███".bright_yellow(),
-        "███".bright_green(),
-        "███".bright_cyan(),
-        "███".bright_blue(),
-        "███".bright_magenta(),
-        "███".bright_black(),
-        "███".bright_white()
-    ));
-    info.push(format!(
-        "	  {}{}{}{}{}{}{}{}",
-        "███".red(),
-        "███".yellow(),
-        "███".green(),
-        "███".cyan(),
-        "███".blue(),
-        "███".magenta(),
-        "███".black(),
-        "███".white()
-    ));
+    let (username, hostname) = (whoami::username(), whoami::hostname());
+    let underline_len = username.len() + hostname.len() + 1;
+    let underline = std::iter::repeat('═').take(underline_len).collect();
+    let info = &[
+        "".into(),
+        "".into(),
+        format!(
+            "{}{}{}",
+            username.bright_red().bold(),
+            "@".bold(),
+            hostname.bright_red().bold()
+        ),
+        underline,
+        format!("{}{}", "rust ver: ".bright_red(), rust_ver[1]),
+        format!("{}{}", "rustup ver: ".bright_red(), rustup_ver[1]),
+        format!("{}{}", "cargo ver: ".bright_red(), cargo_ver[1]),
+        format!("{}{}", "cargo crates: ".bright_red(), cargo_packages),
+        format!("{}{}", "os: ".bright_red(), whoami::distro()),
+        format!(
+            "{}{}",
+            "kernel: ".bright_red(),
+            sys.get_kernel_version().unwrap_or_else(|| "Unknown".into())
+        ),
+        format!("{}{}", "cpu: ".bright_red(), cpu),
+        format!("{}{} » {} MB", "ram: ".bright_red(), used_ram, total_ram),
+        "".into(),
+        format!(
+            "{}{}{}{}{}{}{}{}",
+            "███".bright_red(),
+            "███".bright_yellow(),
+            "███".bright_green(),
+            "███".bright_cyan(),
+            "███".bright_blue(),
+            "███".bright_magenta(),
+            "███".bright_black(),
+            "███".bright_white()
+        ),
+        format!(
+            "{}{}{}{}{}{}{}{}",
+            "███".red(),
+            "███".yellow(),
+            "███".green(),
+            "███".cyan(),
+            "███".blue(),
+            "███".magenta(),
+            "███".black(),
+            "███".white()
+        ),
+    ];
 
     render(info);
 }

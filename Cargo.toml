@@ -16,4 +16,4 @@ publish = true
 [dependencies]
 colored = "2.0.0"
 whoami = "1.1.1"
-sysinfo="0.16.5"
+sysinfo = { version = "0.16.5", default-features = false }
