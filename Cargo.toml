@@ -7,7 +7,6 @@ description = "A system information tool for Rustaceans"
 readme = "README.md"
 repository = "https://github.com/irevenko/ferris-fetch/"
 license = "MIT"
-license-file = "LICENSE"
 keywords = ["system", "cli"]
 publish = true
 
