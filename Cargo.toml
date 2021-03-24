@@ -1,6 +1,6 @@
 [package]
 name = "ferris-fetch"
-version = "1.2.2"
+version = "1.2.3"
 authors = ["irevenko <ilya.revenko17@gmail.com>"]
 edition = "2018"
 description = "A system information tool for Rustaceans"

@@ -56,19 +56,20 @@ fn main() {
     let  rustc_ver     = get_ver("rustc  -V");
     let  cargo_ver     = get_ver("cargo  -V");
     let rustup_ver     = get_ver("rustup -V");
-    let cargo_crates = get_cargo_crates();
+    let cargo_crates    = get_cargo_crates();
 
     let userinfo       = format!("{}{}{}", whoami::username().bright_red().bold(), "@".bold(), whoami::hostname().bright_red().bold());
     let splitline      = "═".repeat(whoami::username().len() + whoami::hostname().len() + 1);
     let rustc_ver      = format!("{}{}"      , "rustc  ver: ".bright_red(),           rustc_ver);
     let rustup_ver     = format!("{}{}"      , "rustup ver: ".bright_red(),          rustup_ver);
     let cargo_ver      = format!("{}{}"      , "cargo  ver: ".bright_red(),           cargo_ver);
-    let cargo_crates = format!("{}{}"      , "cargo crates: ".bright_red(),      cargo_crates);
+    let cargo_crates   = format!("{}{}"      , "cargo crates: ".bright_red(),      cargo_crates);
     let os             = format!("{}{}"      , "os: ".bright_red(),    whoami::distro());
     let kernel         = format!("{}{}"      , "kernel: ".bright_red(),              kernel);
     let cpu            = format!("{}{}"      , "cpu: ".bright_red(),                 cpu);
     let ram            = format!("{}{} » {}{}", "ram: ".bright_red(), used_ram, total_ram, " MB");
-    let bright         = format!(
+    
+    let bright_colors = format!(
         "{}{}{}{}{}{}{}{}",
         "███".bright_red(),
         "███".bright_yellow(),
@@ -79,7 +80,7 @@ fn main() {
         "███".bright_black(),
         "███".bright_white()
     );
-    let dark           = format!(
+    let dark_colors = format!(
         "{}{}{}{}{}{}{}{}",
         "███".red(),
         "███".yellow(),
@@ -105,8 +106,8 @@ fn main() {
         cpu,
         ram,
         "".to_string(),
-        bright,
-        dark,
+        bright_colors,
+        dark_colors,
         "".to_string()
     ]);
 }
