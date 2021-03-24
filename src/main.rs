@@ -56,14 +56,14 @@ fn main() {
     let  rustc_ver     = get_ver("rustc  -V");
     let  cargo_ver     = get_ver("cargo  -V");
     let rustup_ver     = get_ver("rustup -V");
-    let cargo_packages = get_cargo_crates();
+    let cargo_crates = get_cargo_crates();
 
     let userinfo       = format!("{}{}{}", whoami::username().bright_red().bold(), "@".bold(), whoami::hostname().bright_red().bold());
     let splitline      = "═".repeat(whoami::username().len() + whoami::hostname().len() + 1);
     let rustc_ver      = format!("{}{}"      , "rustc  ver: ".bright_red(),           rustc_ver);
     let rustup_ver     = format!("{}{}"      , "rustup ver: ".bright_red(),          rustup_ver);
     let cargo_ver      = format!("{}{}"      , "cargo  ver: ".bright_red(),           cargo_ver);
-    let cargo_packages = format!("{}{}"      , "cargo crates: ".bright_red(),      cargo_packages);
+    let cargo_crates = format!("{}{}"      , "cargo crates: ".bright_red(),      cargo_crates);
     let os             = format!("{}{}"      , "os: ".bright_red(),    whoami::distro());
     let kernel         = format!("{}{}"      , "kernel: ".bright_red(),              kernel);
     let cpu            = format!("{}{}"      , "cpu: ".bright_red(),                 cpu);
@@ -99,7 +99,7 @@ fn main() {
         rustc_ver,
         rustup_ver,
         cargo_ver,
-        cargo_packages,
+        cargo_crates,
         os,
         kernel,
         cpu,
