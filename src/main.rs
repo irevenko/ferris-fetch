@@ -1,22 +1,24 @@
 use colored::*;
 use sysinfo::{ProcessorExt, System, SystemExt};
 
-const FERRIS_ART: &str = r###"
-              ▄   ▓▄ ▄▓▓  ▓▓
-            ▄  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ▄
-           ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
-        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▌
-      ▄▄▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▄▄▄
-      ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▌
-   ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▀▓▄▒▓▓▓▓▓▀▓▄▓▓▓▓▓▓▓▓▓▓▓▓▓
-    ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▌ ▐██▒▓▓▒▌ ██▌▓▓▓▓▓▓▓▓▓▓▓
-  ▄▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████▒▓▓▒████▌▓▓▓▓▓▓▓▓▓▓▓▓▓▄
- ▓▓▓▌▀▓▓▓▓▓▓▓▓▓▓▒▄▄▌▒▓▓▓▓▓▒▒▄▒▒▓▓▓▓▒▒▓▓▀▀▓▀▓▓▓
-  ▀▓▓▄ ▀▄ ▀▓▓▀▓▀▒▓▓▓▒▀▓▒▓▓▀▒▓▓▓▒▀▓▀▓▒▓▀  ▀ ▐▓▀
-    ▓▄  ▄  ▀▓▓▓▓▓▀▀▀         ▓▓▓▓▓▀    ▀ ▄▓
-      ▀       ▀▓▓▓▓▄▄     ▄▄▓▓▓▀         ▀
-                 ▀▀▀▀     ▀▀▀             
-"###;
+const FERRIS_ART: &[&str] = &[
+    "                                              ",
+    "              ▄   ▓▄ ▄▓▓  ▓▓                  ",
+    "            ▄  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  ▄          ",
+    "           ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓          ",
+    "        ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▌      ",
+    "      ▄▄▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▄▄▄    ",
+    "      ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▌    ",
+    "   ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▀▓▄▒▓▓▓▓▓▀▓▄▓▓▓▓▓▓▓▓▓▓▓▓▓  ",
+    "    ▐▓▓▓▓▓▓▓▓▓▓▓▓▓▌ ▐██▒▓▓▒▌ ██▌▓▓▓▓▓▓▓▓▓▓▓   ",
+    "  ▄▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓█████▒▓▓▒████▌▓▓▓▓▓▓▓▓▓▓▓▓▓▄",
+    " ▓▓▓▌▀▓▓▓▓▓▓▓▓▓▓▒▄▄▌▒▓▓▓▓▓▒▒▄▒▒▓▓▓▓▒▒▓▓▀▀▓▀▓▓▓",
+    "  ▀▓▓▄ ▀▄ ▀▓▓▀▓▀▒▓▓▓▒▀▓▒▓▓▀▒▓▓▓▒▀▓▀▓▒▓▀  ▀ ▐▓▀",
+    "    ▓▄  ▄  ▀▓▓▓▓▓▀▀▀         ▓▓▓▓▓▀    ▀ ▄▓   ",
+    "      ▀       ▀▓▓▓▓▄▄     ▄▄▓▓▓▀         ▀    ",
+    "                 ▀▀▀▀     ▀▀▀                 ",
+    "                                              ",
+];
 
 fn exc(exc: &str) -> Result<std::process::Output, std::io::Error> {
     let exc: Vec<&str> = exc.split_whitespace().collect();
@@ -51,12 +53,11 @@ fn get_kernel() -> Option<String> {
 }
 
 fn render(info: Vec<String>) {
-    let lines = FERRIS_ART.lines();
     let mut i = 0;
     let empty = String::from("");
-    for line in lines {
+    for line in FERRIS_ART {
         println!(
-            "{}{}",
+            "{}   {}",
             line.red(),
             match i < info.len() {
                 true => {
@@ -70,8 +71,6 @@ fn render(info: Vec<String>) {
 }
 
 fn main() {
-    let mut info: Vec<String> = vec![];
-
     let cpu_sys = System::new();
     let cpu = cpu_sys.get_processors();
     let cpu = cpu[0].get_brand();
@@ -90,49 +89,36 @@ fn main() {
     let cargo_packages = get_cargo_crates();
 
     // hell formatting (because of the crab shape)
-    info.push("".to_string());
-    info.push("".to_string());
+    let mut info = vec!["".to_string(), "".to_string()];
     info.push(format!(
-        "              {}{}{}",
+        "{}{}{}",
         whoami::username().bright_red().bold(),
         "@".bold(),
         whoami::hostname().bright_red().bold()
     ));
-    info.push(format!("              {}", "════════════════"));
+    info.push("════════════════".to_string());
+    info.push(format!("{}{}", "rust ver: ".bright_red(), rust_ver[1]));
+    info.push(format!("{}{}", "rustup ver: ".bright_red(), rustup_ver[1]));
+    info.push(format!("{}{}", "cargo ver: ".bright_red(), cargo_ver[1]));
     info.push(format!(
-        "          {}{}",
-        "rust ver: ".bright_red(),
-        rust_ver[1]
-    ));
-    info.push(format!(
-        "        {}{}",
-        "rustup ver: ".bright_red(),
-        rustup_ver[1]
-    ));
-    info.push(format!(
-        "        {}{}",
-        "cargo ver: ".bright_red(),
-        cargo_ver[1]
-    ));
-    info.push(format!(
-        "      {}{}",
+        "{}{}",
         "cargo crates: ".bright_red(),
         cargo_packages
     ));
-    info.push(format!("	  {}{}", "os: ".bright_red(), whoami::distro()));
+    info.push(format!("{}{}", "os: ".bright_red(), whoami::distro()));
     if let Some(kernel) = get_kernel() {
-        info.push(format!("	  {}{}", "kernel: ".bright_red(), kernel));
+        info.push(format!("{}{}", "kernel: ".bright_red(), kernel));
     }
-    info.push(format!("	  {}{}", "cpu: ".bright_red(), cpu));
+    info.push(format!("{}{}", "cpu: ".bright_red(), cpu));
     info.push(format!(
-        "	  {}{} » {} MB",
+        "{}{} » {} MB",
         "ram: ".bright_red(),
         used_ram,
         total_ram
     ));
     info.push("".to_string());
     info.push(format!(
-        "	  {}{}{}{}{}{}{}{}",
+        "{}{}{}{}{}{}{}{}",
         "███".bright_red(),
         "███".bright_yellow(),
         "███".bright_green(),
@@ -143,7 +129,7 @@ fn main() {
         "███".bright_white()
     ));
     info.push(format!(
-        "	  {}{}{}{}{}{}{}{}",
+        "{}{}{}{}{}{}{}{}",
         "███".red(),
         "███".yellow(),
         "███".green(),
