@@ -41,16 +41,9 @@ fn get_cargo_crates() -> usize {
         Ok(installs) => installs.stdout,
         Err(_) => "not present".as_bytes().to_vec(),
     };
+
     let cargo_installs = std::str::from_utf8(&cargo_installs).unwrap().lines();
-
-    let mut cargo_vec: Vec<String> = Vec::new();
-
-    for line in cargo_installs {
-        if !line.starts_with("    ") { 
-            cargo_vec.push(line.to_string());
-        }
-    }
-    return cargo_vec.len();
+    cargo_installs.filter(|line| !line.starts_with("    ")).count()
 }
 
 fn get_kernel() -> Option<String> {

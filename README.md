@@ -1,7 +1,9 @@
 # 🎨🦀 ferris-fetch
 > Inspired by <a href="https://github.com/Gyro7/gofetch">gofetch 💖</a>
 
-<p align="center"><img src="preview.png" width="800"></p><br>
+<p align="center"><img src="preview.png" width="800"></p>
+<p align="center">🛠️ Cross platfrom System Info Tool for Rustaceancs 🦀</p>
+
 
 # Installation 🔨
 ```cargo install ferris-fetch``` <br>
