@@ -49,18 +49,14 @@ fn get_cargo_crates() -> usize {
 }
 
 fn render(info: &[String]) {
-    let mut i = 0;
-    let empty = String::from("");
+    let mut info = info.iter();
     for line in FERRIS_ART {
         println!(
             "{}   {}",
             line.red(),
-            match i < info.len() {
-                true => {
-                    i += 1;
-                    &info[i - 1]
-                }
-                false => &empty,
+            match info.next() {
+                Some(info) => info.as_str(),
+                None => "",
             }
         );
     }
