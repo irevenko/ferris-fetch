@@ -1,5 +1,5 @@
 use colored::*;
-use sysinfo::{ProcessorExt, System, SystemExt};
+use sysinfo::{ProcessorExt, RefreshKind, System, SystemExt};
 
 const FERRIS_ART: &[&str] = &[
     "                                              ",
@@ -48,10 +48,6 @@ fn get_cargo_crates() -> usize {
     cargo_installs.filter(|line| !line.starts_with("    ")).count()
 }
 
-fn get_kernel() -> Option<String> {
-    System::new().get_kernel_version()
-}
-
 fn render(info: Vec<String>) {
     let mut i = 0;
     let empty = String::from("");
@@ -71,14 +67,12 @@ fn render(info: Vec<String>) {
 }
 
 fn main() {
-    let cpu_sys = System::new();
-    let cpu = cpu_sys.get_processors();
+    let sys = System::new_with_specifics(RefreshKind::new().with_cpu().with_memory());
+    let cpu = sys.get_processors();
     let cpu = cpu[0].get_brand();
 
-    let mut ram_sys = sysinfo::System::new_all();
-    let used_ram = ram_sys.get_used_memory() / 1024;
-    let total_ram = ram_sys.get_total_memory() / 1024;
-    ram_sys.refresh_all();
+    let used_ram = sys.get_used_memory() / 1024;
+    let total_ram = sys.get_total_memory() / 1024;
 
     let rustc_cmd = get_ver("rustc -V");
     let cargo_cmd = get_ver("cargo -V");
@@ -106,7 +100,7 @@ fn main() {
         cargo_packages
     ));
     info.push(format!("{}{}", "os: ".bright_red(), whoami::distro()));
-    if let Some(kernel) = get_kernel() {
+    if let Some(kernel) = sys.get_kernel_version() {
         info.push(format!("{}{}", "kernel: ".bright_red(), kernel));
     }
     info.push(format!("{}{}", "cpu: ".bright_red(), cpu));
