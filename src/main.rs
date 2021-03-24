@@ -36,13 +36,21 @@ fn get_ver(cmd: &str) -> String {
     }
 }
 
-fn get_cargo_packages() -> String {
+fn get_cargo_crates() -> usize {
     let cargo_installs = match exc("cargo install --list") {
         Ok(installs) => installs.stdout,
         Err(_) => "not present".as_bytes().to_vec(),
     };
     let cargo_installs = std::str::from_utf8(&cargo_installs).unwrap().lines();
-    format!("{}", cargo_installs.count() / 2)
+
+    let mut cargo_vec: Vec<String> = Vec::new();
+
+    for line in cargo_installs {
+        if !line.starts_with("    ") { 
+            cargo_vec.push(line.to_string());
+        }
+    }
+    return cargo_vec.len();
 }
 
 fn get_kernel() -> Option<String> {
@@ -86,7 +94,7 @@ fn main() {
     let rust_ver: Vec<&str> = rustc_cmd.split_whitespace().collect();
     let cargo_ver: Vec<&str> = cargo_cmd.split_whitespace().collect();
     let rustup_ver: Vec<&str> = rustup_cmd.split_whitespace().collect();
-    let cargo_packages = get_cargo_packages();
+    let cargo_packages = get_cargo_crates();
 
     // hell formatting (because of the crab shape)
     info.push("".to_string());
@@ -115,7 +123,7 @@ fn main() {
     ));
     info.push(format!(
         "      {}{}",
-        "cargo packages: ".bright_red(),
+        "cargo crates: ".bright_red(),
         cargo_packages
     ));
     info.push(format!("	  {}{}", "os: ".bright_red(), whoami::distro()));
