@@ -56,7 +56,7 @@ fn main() {
     let  rustc_ver     = get_ver("rustc  -V");
     let  cargo_ver     = get_ver("cargo  -V");
     let rustup_ver     = get_ver("rustup -V");
-    let cargo_crates    = get_cargo_crates();
+    let cargo_crates   = get_cargo_crates();
 
     let userinfo       = format!("{}{}{}", whoami::username().bright_red().bold(), "@".bold(), whoami::hostname().bright_red().bold());
     let splitline      = "═".repeat(whoami::username().len() + whoami::hostname().len() + 1);
