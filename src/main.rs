@@ -47,13 +47,25 @@ fn get_cargo_crates() -> usize {
         })
 }
 
-fn render(info: &[String]) {
-    for (ferris_line, info_line) in FERRIS_ART.iter().zip(info) {
-        println!("{}   {}", ferris_line.red(), info_line);
+fn render(art: bool, info: &[String]) {
+    if art {
+        for (ferris_line, info_line) in FERRIS_ART.iter().zip(info) {
+            println!("{}   {}", ferris_line.red(), info_line);
+        }
+    } else {
+        for line in info {
+            println!("{}", line);
+        }
     }
 }
 
 fn main() {
+    let mut art = true;
+    let args: Vec<String> = std::env::args().collect();
+    if args.len() == 2 && args[1] == "-s" {
+        art = false;
+    }
+
     let sys = System::new_with_specifics(RefreshKind::new().with_cpu().with_memory());
     let cpu = sys.get_processors()[0].get_brand();
     let kernel = sys.get_kernel_version().unwrap_or_else(|| "Unknown".into());
@@ -110,22 +122,25 @@ fn main() {
         "███".white()
     );
 
-    render(&[
-        "".to_string(),
-        "".to_string(),
-        userinfo,
-        splitline,
-        rustc_ver,
-        rustup_ver,
-        cargo_ver,
-        cargo_crates,
-        os,
-        kernel,
-        cpu,
-        ram,
-        "".to_string(),
-        bright_colors,
-        dark_colors,
-        "".to_string(),
-    ]);
+    render(
+        art,
+        &[
+            "".to_string(),
+            "".to_string(),
+            userinfo,
+            splitline,
+            rustc_ver,
+            rustup_ver,
+            cargo_ver,
+            cargo_crates,
+            os,
+            kernel,
+            cpu,
+            ram,
+            "".to_string(),
+            bright_colors,
+            dark_colors,
+            "".to_string(),
+        ],
+    );
 }
