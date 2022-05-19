@@ -1,6 +1,6 @@
 use colored::*;
 use std::string::ToString;
-use sysinfo::{ProcessorExt, RefreshKind, System, SystemExt};
+use sysinfo::{System, SystemExt, RefreshKind, ProcessorExt};
 
 const FERRIS_ART: &[&str] = &[
     "                                              ",
@@ -66,11 +66,12 @@ fn main() {
         art = false;
     }
 
-    let sys = System::new_with_specifics(RefreshKind::new().with_cpu().with_memory());
-    let cpu = sys.get_processors()[0].get_brand();
-    let kernel = sys.get_kernel_version().unwrap_or_else(|| "Unknown".into());
-    let used_ram = sys.get_used_memory() / 1024;
-    let total_ram = sys.get_total_memory() / 1024;
+    let mut sys = System::new_with_specifics(RefreshKind::new().with_cpu());
+    sys.refresh_all();
+    let kernel = sys.kernel_version().unwrap_or_else(|| "Unknown".into());
+    let total_ram = sys.total_memory();
+    let used_ram = sys.used_memory();
+    let cpu = sys.processors()[0].brand();
 
     let rustc_ver = get_ver("rustc  -V");
     let cargo_ver = get_ver("cargo  -V");
