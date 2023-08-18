@@ -69,8 +69,8 @@ fn main() {
     let mut sys = System::new_with_specifics(RefreshKind::new().with_cpu());
     sys.refresh_all();
     let kernel = sys.kernel_version().unwrap_or_else(|| "Unknown".into());
-    let total_ram = sys.total_memory();
-    let used_ram = sys.used_memory();
+    let total_ram = sys.total_memory() / 1000;
+    let used_ram = sys.used_memory() / 1000;
     let cpu = sys.processors()[0].brand();
 
     let rustc_ver = get_ver("rustc  -V");
