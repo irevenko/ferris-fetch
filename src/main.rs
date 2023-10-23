@@ -1,6 +1,6 @@
 use colored::*;
 use std::string::ToString;
-use sysinfo::{System, SystemExt, RefreshKind, ProcessorExt};
+use sysinfo::{System, SystemExt, RefreshKind, CpuExt};
 
 const FERRIS_ART: &[&str] = &[
     "                                              ",
@@ -20,6 +20,15 @@ const FERRIS_ART: &[&str] = &[
     "                 ▀▀▀▀     ▀▀▀                 ",
     "                                              ",
 ];
+
+const BYTES_TO_MEGABYTES_FACTOR: u64 = 1024 * 1024;
+
+/// Some values are hard to interpret when displayed as a numbers of bytes, so this function
+/// converts a number of byte as number of megabytes.
+fn bytes_to_megabytes(nob: u64) -> u64 {
+    nob / BYTES_TO_MEGABYTES_FACTOR
+
+}
 
 fn exc(exc: &str) -> Result<std::process::Output, std::io::Error> {
     let mut exc = exc.split_whitespace();
@@ -66,12 +75,14 @@ fn main() {
         art = false;
     }
 
-    let mut sys = System::new_with_specifics(RefreshKind::new().with_cpu());
+    let mut sys = System::new_with_specifics(RefreshKind::new());
     sys.refresh_all();
     let kernel = sys.kernel_version().unwrap_or_else(|| "Unknown".into());
-    let total_ram = sys.total_memory();
-    let used_ram = sys.used_memory();
-    let cpu = sys.processors()[0].brand();
+
+    let total_ram = bytes_to_megabytes(sys.total_memory());
+    let used_ram = bytes_to_megabytes(sys.used_memory());
+
+    let cpu = sys.cpus()[0].brand();
 
     let rustc_ver = get_ver("rustc  -V");
     let cargo_ver = get_ver("cargo  -V");
@@ -144,4 +155,15 @@ fn main() {
             "".to_string(),
         ],
     );
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::bytes_to_megabytes;
+
+    #[test]
+    fn bytes_to_megabytes_test() {
+        let bytes = 32 * 1024 * 1024;
+        assert_eq!(bytes_to_megabytes(bytes), 32);
+    }
 }
